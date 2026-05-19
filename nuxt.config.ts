@@ -22,6 +22,7 @@ export default defineNuxtConfig({
       tailwindcss: {},
       autoprefixer: {},
     },
-  }
+  },
+  css: ['@vuepic/vue-datepicker/dist/main.css']
 
 })
