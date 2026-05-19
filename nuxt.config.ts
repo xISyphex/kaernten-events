@@ -1,4 +1,4 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+﻿// https://nuxt.com/docs/api/configuration/nuxt-config
 const env = (globalThis as any).process?.env || {}
 
 export default defineNuxtConfig({
@@ -23,6 +23,16 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-  css: ['@vuepic/vue-datepicker/dist/main.css']
+  css: ['@vuepic/vue-datepicker/dist/main.css'],
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        '@vuepic/vue-datepicker',
+      ]
+    }
+  }
 
 })

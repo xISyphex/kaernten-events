@@ -1,4 +1,4 @@
-let cache: { towns: string[]; groups: string[] } | null = null
+let cache: { towns: string[]; groups: string[]; themes: string[] } | null = null
 
 export default defineEventHandler(async () => {
   if (cache) {
@@ -6,40 +6,55 @@ export default defineEventHandler(async () => {
   }
 
   const base = 'https://webapi.deskline.net/kaerntenevents/de/events'
-  const fields = 'location{place,town},criteria{groupName}'
+  const fields = 'location{place,town},criteria{groupName},holidayThemes{name}'
   const pageSizes = [1000, 500, 200, 100]
   const towns = new Set<string>()
   const groups = new Set<string>()
+  const themes = new Set<string>()
 
-  for (const pageSize of pageSizes) {
-    try {
-      const firstPage = (await fetchPage(base, fields, 0, pageSize)) as Record<string, any>
-      if (!firstPage?.paging || !Array.isArray(firstPage.data)) {
-        continue
+ for (const pageSize of pageSizes) {
+  try {
+    const firstPage = (await fetchPage(base, fields, 0, pageSize)) as Record<string, any>
+    if (!firstPage?.paging || !Array.isArray(firstPage.data)) continue
+
+    const pageCount = Number(firstPage.paging.pageCount ?? 1)
+    collectValues(firstPage.data, towns, groups, themes)
+
+    let success = true
+    for (let pageNo = 1; pageNo < pageCount; pageNo += 1) {
+      const pageData = (await fetchPage(base, fields, pageNo, pageSize)) as Record<string, any>
+      if (!pageData?.data) {
+        console.warn(`Page ${pageNo} returned no data, retrying with smaller pageSize`)
+        success = false
+        break
       }
-
-      const pageCount = Number(firstPage.paging.pageCount ?? 1)
-      collectValues(firstPage.data, towns, groups)
-
-      for (let pageNo = 1; pageNo < pageCount; pageNo += 1) {
-        const pageData = (await fetchPage(base, fields, pageNo, pageSize)) as Record<string, any>
-        if (!pageData?.data) {
-          break
-        }
-        collectValues(pageData.data, towns, groups)
-      }
-
-      cache = {
-        towns: Array.from(towns).sort(),
-        groups: Array.from(groups).sort(),
-      }
-      return cache
-    } catch (error) {
-      // Try a smaller page size on failure
+      collectValues(pageData.data, towns, groups, themes)
     }
-  }
 
-  cache = { towns: [], groups: [] }
+    if (!success) {
+      // Reset and try with smaller page size
+      towns.clear()
+      groups.clear()
+      themes.clear()
+      continue
+    }
+
+    cache = {
+      towns: Array.from(towns).sort(),
+      groups: Array.from(groups).sort(),
+      themes: Array.from(themes).sort(),
+    }
+    console.log(`Options loaded: ${towns.size} towns, ${groups.size} groups, ${themes.size} themes`)
+    return cache
+  } catch (error) {
+    console.error(`Failed with pageSize ${pageSize}:`, error)
+    towns.clear()
+    groups.clear()
+    themes.clear()
+  }
+}
+
+  cache = { towns: [], groups: [], themes: [] }
   return cache
 })
 
@@ -65,7 +80,7 @@ async function fetchPage(base: string, fields: string, pageNo: number, pageSize:
   })
 }
 
-function collectValues(data: Array<Record<string, any>>, towns: Set<string>, groups: Set<string>) {
+function collectValues(data: Array<Record<string, any>>, towns: Set<string>, groups: Set<string>, themes?: Set<string>) {
   data.forEach((event) => {
     const town = event.location?.town ?? event.location?.place
     if (town) {
@@ -78,5 +93,20 @@ function collectValues(data: Array<Record<string, any>>, towns: Set<string>, gro
       const name = group?.groupName
       if (name) groups.add(String(name))
     })
+
+    const eventThemes = new Set<string>()
+    const rawThemes = event.holidayThemes ?? event.themes ?? []
+    if (Array.isArray(rawThemes)) {
+      rawThemes.forEach((theme) => {
+        const name = theme?.name
+        if (name) eventThemes.add(String(name))
+      })
+    }
+    if (themes) {
+      eventThemes.forEach(themes.add, themes)
+    }
+    if (event.holidayThemes?.length) {
+  //console.log('event themes:', event.holidayThemes)
+}
   })
 }

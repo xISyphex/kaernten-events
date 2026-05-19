@@ -12,9 +12,9 @@
                     <span class="text-lg font-semibold tracking-tight">Events Kärnten</span>
                 </a>
                 <div class="hidden sm:ml-12 sm:flex sm:space-x-8">
-                    <a href="/" class="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-200 border-b-2 border-yellow-400">Home</a>
-                    <a href="/events" class="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:border-b-2 hover:border-red-500 transition">Events</a>
-                    <a href="/about" class="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:border-b-2 hover:border-white transition">About</a>
+                    <a href="/" class="inline-flex items-center px-3 py-2 text-sm font-bold text-slate-300 hover:text-white hover:border-b-2 hover:border-yellow-400 transition">Home</a>
+                    <a href="/events" class="inline-flex items-center px-3 py-2 text-sm font-bold text-slate-300 hover:text-white hover:border-b-2 hover:border-red-500 transition">Events</a>
+                    <a href="/about" class="inline-flex items-center px-3 py-2 text-sm font-bold text-slate-300 hover:text-white hover:border-b-2 hover:border-white transition">About</a>
                 </div>
             </div>
         </div>

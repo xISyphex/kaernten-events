@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { VueDatePicker } from '@vuepic/vue-datepicker';
+import { c } from 'vue-router/dist/index-Bt5WDvfV.cjs';
 
 const props = defineProps<{
   events?: Array<Record<string, any>>
   towns?: string[]
   groups?: string[]
+  themes?: string[]
   topOnly?: boolean
 }>()
 const emit = defineEmits<{
-  (e: 'update', payload: { search: string; towns: string[]; groups: string[]; topOnly: boolean; startDate?: string | null; endDate?: string | null }): void
+  (e: 'update', payload: { search: string; towns: string[]; groups: string[]; themes: string[]; topOnly: boolean; startDate?: string | null; endDate?: string | null }): void
 }>()
 
 const search = ref('')
@@ -17,6 +19,7 @@ const topOnly = ref(Boolean(props.topOnly))
 
 const stagedTowns = ref<string[]>([])
 const stagedGroups = ref<string[]>([])
+const stagedThemes = ref<string[]>([])
 const stagedStart = ref<string | null>(null)
 const stagedEnd = ref<string | null>(null)
 const date = ref<string | null>(null)
@@ -25,16 +28,19 @@ const appliedSearch = ref('')
 const appliedTopOnly = ref(false)
 const appliedTowns = ref<string[]>([])
 const appliedGroups = ref<string[]>([])
+const appliedThemes = ref<string[]>([])
 const appliedStart = ref<string | null>(null)
 const appliedEnd = ref<string | null>(null)
 
 const filterRoot = ref<HTMLElement | null>(null)
 const showTownMenu = ref(false)
 const showGroupMenu = ref(false)
+const showThemeMenu = ref(false)
 
 function closeAllMenus() {
   showTownMenu.value = false
   showGroupMenu.value = false
+  showThemeMenu.value = false
 }
 
 const handleOutsideClick = (event: MouseEvent) => {
@@ -79,6 +85,24 @@ const groups = computed(() => {
       if (name) values.add(String(name))
     })
   })
+  console.log('Computed groups', { groups: Array.from(values) })
+  return Array.from(values).sort()
+})
+
+const themes = computed(() => {
+  if (Array.isArray(props.themes) && props.themes.length) {
+    return props.themes  // ✅ use the prop passed from parent
+  }
+  // fallback: extract from events
+  const values = new Set<string>()
+  ;(props.events || []).forEach((ev) => {
+    const raw = ev.holidayThemes ?? ev.themes ?? []  // ✅ correct field
+    const items = Array.isArray(raw) ? raw : Array.from(raw as Iterable<any>)
+    items.forEach((t) => {
+      const name = t?.name  // ✅ correct property
+      if (name) values.add(String(name))
+    })
+  })
   return Array.from(values).sort()
 })
 
@@ -88,6 +112,7 @@ const isApplied = computed(
     appliedTopOnly.value ||
     appliedTowns.value.length > 0 ||
     appliedGroups.value.length > 0 ||
+    appliedThemes.value.length > 0 ||
     Boolean(appliedStart.value) ||
     Boolean(appliedEnd.value)
 )
@@ -97,6 +122,7 @@ function emitCurrent() {
     search: appliedSearch.value,
     towns: appliedTowns.value,
     groups: appliedGroups.value,
+    themes: appliedThemes.value,
     topOnly: appliedTopOnly.value,
     startDate: appliedStart.value,
     endDate: appliedEnd.value,
@@ -123,22 +149,27 @@ function toggleGroup(option: string) {
   }
 }
 
+function toggleTheme(option: string) {
+  const index = stagedThemes.value.indexOf(option)
+  if (index >= 0) {
+    stagedThemes.value.splice(index, 1)
+  } else {
+    stagedThemes.value.push(option)
+  }
+}
+
 function applyFilters() {
   console.log('Applying filters', { date: date.value })
   appliedSearch.value = search.value
   appliedTopOnly.value = topOnly.value
   appliedTowns.value = [...stagedTowns.value]
   appliedGroups.value = [...stagedGroups.value]
+  appliedThemes.value = [...stagedThemes.value]
   appliedStart.value = date.value?.[0] ?? null
-  // if (appliedStart.value) {
-  //appliedStart.value.setHours(0, 0, 0, 1)
-  //}
   appliedEnd.value = date.value?.[1] ?? null
-  if (appliedEnd.value) {
-  appliedEnd.value.setHours(23, 59, 59, 999)
-  }
   showTownMenu.value = false
   showGroupMenu.value = false
+  showThemeMenu.value = false
   emitCurrent()
 }
 
@@ -147,6 +178,7 @@ function clearFilters() {
   topOnly.value = false
   stagedTowns.value = []
   stagedGroups.value = []
+  stagedThemes.value = []
   stagedStart.value = null
   date.value = null
   stagedEnd.value = null
@@ -154,51 +186,78 @@ function clearFilters() {
   appliedTopOnly.value = false
   appliedTowns.value = []
   appliedGroups.value = []
+  appliedThemes.value = []
   appliedStart.value = null
   appliedEnd.value = null
   showTownMenu.value = false
   showGroupMenu.value = false
+  showThemeMenu.value = false
   emitCurrent()
 }
 
 const townLabel = computed(() => {
-  if (stagedTowns.value.length === 0) return 'Alle Orte'
+  if (stagedTowns.value.length === 0) return 'Ort(e)'
   return `${stagedTowns.value.length} ausgewählt`
 })
 const groupLabel = computed(() => {
-  if (stagedGroups.value.length === 0) return 'Alle Kategorien'
+  if (stagedGroups.value.length === 0) return 'Kategorie(n)'
   return `${stagedGroups.value.length} ausgewählt`
+})
+const themeLabel = computed(() => {
+  if (stagedThemes.value.length === 0) return 'Urlaubstheme(n)'
+  return `${stagedThemes.value.length} ausgewählt`
 })
 </script>
 
 <template>
   <div class="w-full" ref="filterRoot">
-    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-      <button
-        type="button"
-        @click="topOnly = !topOnly"
-        :class="[
-          'rounded-xl border px-4 py-2 text-sm font-medium transition',
-          topOnly ? 'border-red-600 bg-red-600 text-white' : 'border-gray-200 bg-white text-slate-900'
-        ]"
-      >
-        Nur TOP-Events
-      </button>
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
 
-      <input
-        v-model="search"
-        type="search"
-        placeholder="Search events..."
-        class="w-full sm:flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm shadow-sm"
-      />
-    </div>
+  <!-- Button -->
+  <button
+    type="button"
+    @click="topOnly = !topOnly"
+    :class="[
+      'sm:w-[15%] rounded-xl border px-4 py-2 text-sm font-medium transition',
+      topOnly
+        ? 'border-red-600 bg-red-600 text-white'
+        : 'border-gray-200 bg-white text-slate-900'
+    ]"
+  >
+    Nur TOP-Events
+  </button>
+
+
+  <!-- Search -->
+  <input
+    v-model="search"
+    type="search"
+    placeholder="Suche nach Events..."
+    class="sm:w-[50%] rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm shadow-sm"
+  />
+
+  <!-- DatePicker -->
+  <ClientOnly>
+  <div class="sm:w-[35%]">
+    <VueDatePicker
+      v-model="date"
+      :placeholder="'Datum auswählen (Von - Bis)'"
+      :time-config="{ enableTimePicker: false }"
+      :range="{ partialRange: false }"
+      class="w-full"
+    />
+  </div>
+  </ClientOnly>
+
+</div>
+
 
     <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
       <div class="relative">
         <button
           type="button"
-          class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-sm shadow-sm hover:border-slate-400"
-          @click="showTownMenu = !showTownMenu; showGroupMenu = false"
+          class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-black text-sm shadow-sm hover:border-slate-400"
+          @click="showTownMenu = !showTownMenu; showGroupMenu = false; showThemeMenu = false"
         >
           <div class="flex items-center justify-between">
             <span>{{ townLabel }}</span>
@@ -228,8 +287,8 @@ const groupLabel = computed(() => {
       <div class="relative">
         <button
           type="button"
-          class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-sm shadow-sm hover:border-slate-400"
-          @click="showGroupMenu = !showGroupMenu; showTownMenu = false"
+          class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-black text-sm shadow-sm hover:border-slate-400"
+          @click="showGroupMenu = !showGroupMenu; showTownMenu = false; showThemeMenu = false"
         >
           <div class="flex items-center justify-between">
             <span>{{ groupLabel }}</span>
@@ -255,16 +314,39 @@ const groupLabel = computed(() => {
           </ul>
         </div>
       </div>
-      <!-- Date Range Picker -->
-      <div class="relative">
-        <VueDatePicker
-          v-model="date"
-          :placeholder="'Datum auswählen (Von - Bis)'"
-          :time-config="{ enableTimePicker: false }"
-          :range="{ partialRange: false }"
-          class="w-full bg-white text-sm">
-        </VueDatePicker>
+
+       <div class="relative">
+        <button
+          type="button"
+          class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-black text-sm shadow-sm hover:border-slate-400"
+          @click = "showThemeMenu = !showThemeMenu; showTownMenu = false; showGroupMenu = false"
+        >
+          <div class="flex items-center justify-between">
+            <span>{{ themeLabel }}</span>
+            <span class="ml-2 text-slate-400">▼</span>
+          </div>
+        </button>
+        <div
+          v-if="showThemeMenu"
+          class="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-gray-200 bg-white shadow-lg"
+          @click.stop
+        >
+          <ul class="divide-y divide-gray-100 text-sm font-medium">
+            <li
+              v-for="theme in themes"
+              :key="theme"
+              @click.stop="toggleTheme(theme)"
+              class="flex items-center justify-between px-3 py-2 hover:bg-red-400 cursor-pointer"
+              :class="stagedThemes.includes(theme) ? 'bg-slate-900 text-white' : 'text-slate-700'"
+            >
+              <span>{{ theme }}</span>
+              <span v-if="stagedThemes.includes(theme)">✓</span>
+            </li>
+          </ul>
+        </div>
       </div>
+     
+     
 
       <!-- Apply and Reset filter buttons -->
       <div class="sm:col-span-3 flex justify-end mt-2 gap-2">
