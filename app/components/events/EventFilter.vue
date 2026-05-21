@@ -2,10 +2,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { VueDatePicker } from '@vuepic/vue-datepicker';
-import { c } from 'vue-router/dist/index-Bt5WDvfV.cjs';
 
 const props = defineProps<{
-  events?: Array<Record<string, any>>
   towns?: string[]
   groups?: string[]
   themes?: string[]
@@ -60,52 +58,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('click', handleOutsideClick, true)
 })
 
-const towns = computed(() => {
-  if (Array.isArray(props.towns) && props.towns.length) {
-    return props.towns
-  }
-  const values = new Set<string>()
-  ;(props.events || []).forEach((ev) => {
-    const t = ev.location?.town ?? ev.location?.place
-    if (t) values.add(String(t))
-  })
-  return Array.from(values).sort()
-})
-
-const groups = computed(() => {
-  if (Array.isArray(props.groups) && props.groups.length) {
-    return props.groups
-  }
-  const values = new Set<string>()
-  ;(props.events || []).forEach((ev) => {
-    const raw = ev.criteria ?? []
-    const items = Array.isArray(raw) ? raw : Array.from(raw as Iterable<any>)
-
-    items.forEach((c) => {
-      const name = c?.groupName
-      if (name) values.add(String(name))
-    })
-  })
-  console.log('Computed groups', { groups: Array.from(values) })
-  return Array.from(values).sort()
-})
-
-const themes = computed(() => {
-  if (Array.isArray(props.themes) && props.themes.length) {
-    return props.themes  // ✅ use the prop passed from parent
-  }
-  // fallback: extract from events
-  const values = new Set<string>()
-  ;(props.events || []).forEach((ev) => {
-    const raw = ev.holidayThemes ?? ev.themes ?? []  // ✅ correct field
-    const items = Array.isArray(raw) ? raw : Array.from(raw as Iterable<any>)
-    items.forEach((t) => {
-      const name = t?.name  // ✅ correct property
-      if (name) values.add(String(name))
-    })
-  })
-  return Array.from(values).sort()
-})
+const towns = computed(() => props.towns ?? [])
+const groups = computed(() => props.groups ?? [])
+const themes = computed(() => props.themes ?? [])
 
 const isApplied = computed(
   () =>
@@ -234,7 +189,7 @@ const themeLabel = computed(() => {
     v-model="search"
     type="search"
     placeholder="Suche nach Events..."
-    class="sm:w-[50%] rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm shadow-sm"
+    class="sm:w-[50%] rounded-xl border border-gray-200 bg-white px-4 py-2 text-black text-sm shadow-sm"
   />
 
   <!-- DatePicker -->

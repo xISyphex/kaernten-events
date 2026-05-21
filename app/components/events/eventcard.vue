@@ -56,8 +56,7 @@ const timeText = computed(() => {
 
 <template>
 <NuxtLink :to="`/events/${event.id ?? event['@id']}`" target="_blank">
-
-  <article class="rounded-2xl bg-slate-50 border-2 border-gray-300 overflow-hidden shadow-sm hover:scale-[1.08] hover:shadow-lg hover:border-green-500 hover:border-2 transition-transform">
+  <article class="group h-full flex flex-col rounded-2xl bg-slate-50 border-2 border-gray-300 overflow-hidden shadow-sm hover:scale-[1.08] hover:shadow-lg hover:border-blue-500 hover:border-2 transition-transform">
     <div v-if="eventImage" class="relative h-48 bg-slate-200">
       <!-- Event Image-->
       <img
@@ -78,17 +77,21 @@ const timeText = computed(() => {
       <div v-if="props.event.isTopEvent" class="absolute top-3 right-3 rounded-lg bg-red-600/90 px-2 py-1 text-xs font-bold text-white border border-white shadow-md">
         TOP Event!
       </div>
+
     </div>
-    <div class="p-5">
-      <h3 class="text-lg font-semibold text-slate-900">{{ title }}</h3>
+    <div v-else class="h-48 flex items-center justify-center bg-slate-200">
+      <span class="text-sm text-slate-500">Kein Bild verfügbar</span>
+    </div>
+    <div class="p-5 flex flex-col flex-1 gap-2">
+      <h3 class="event-title text-lg font-semibold text-slate-900 group-hover:text-blue-500">{{ title }}</h3>
       <div 
         v-if="description"
-        class="mt-3 text-sm text-slate-600" v-html="description">
+        class="mt-2 mb-2 text-sm text-slate-600" v-html="description">
       </div>
-      <div v-else class="mt-3 text-sm text-slate-600 font-style italic">
+      <div v-else class="mt-2 mb-2 text-sm text-slate-600 font-style italic">
         Keine Beschreibung verfügbar.
       </div>
-      <div class="mt-4 flex flex-wrap gap-2 text-xs">
+      <div class="mt-auto flex flex-wrap gap-2 text-xs">
         <span
           v-if="timeText && timeText !== '00:00'"
           class="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-700 border border-gray-300"

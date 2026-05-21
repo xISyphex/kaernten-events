@@ -51,7 +51,7 @@ const address = computed(() => event.value?.addresses?.[0] ?? null)
         <ul class="divide-y divide-gray-100">
           <li v-for="(item, i) in nextDates" :key="i" class="py-2 flex justify-between text-sm text-slate-700">
             <span>{{ new Date(item.date).toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' }) }}</span>
-            <span class="text-slate-500">{{ item.startTime }} · {{ item.duration }} Min.</span>
+            <span class="text-slate-500">{{ item.startTime }} · {{ item.duration }} Std.</span>
           </li>
         </ul>
       </div>
