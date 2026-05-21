@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
   const sessionId = globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)
 
   try {
+    console.log(`Fetching pageNo ${pageNo} with pageSize ${pageSize}, sessionId: ${sessionId}, url: ${url}`)
     return await $fetch(url, {
       headers: {
         'User-Agent': 'Nuxt/DesklineClient',

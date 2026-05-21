@@ -1,3 +1,4 @@
+<!-- EventFilter.vue - Component for filtering events by various criteria -->
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { VueDatePicker } from '@vuepic/vue-datepicker';

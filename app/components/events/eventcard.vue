@@ -55,6 +55,8 @@ const timeText = computed(() => {
 </script>
 
 <template>
+<NuxtLink :to="`/events/${event.id ?? event['@id']}`" target="_blank">
+
   <article class="rounded-2xl bg-slate-50 border-2 border-gray-300 overflow-hidden shadow-sm hover:scale-[1.08] hover:shadow-lg hover:border-green-500 hover:border-2 transition-transform">
     <div v-if="eventImage" class="relative h-48 bg-slate-200">
       <!-- Event Image-->
@@ -122,7 +124,9 @@ const timeText = computed(() => {
       </div>
     </div>
   </article>
+  </NuxtLink>
 </template>
+
 
 <!--GET
 	https://webapi.deskline.net/kaerntenevents/de/events/KTN/fc2d5d21-0070-4af2-ad36-fc1288c2ecdb?fields=id,active,name,dbCode,owner,copyright,author,license,urlFriendlyName,isTopEvent,visibilityLevel,location{place,townId,town,regions,country,coordinate{name,long,lat}},onlineBookable,descriptions(types:[32,33,51]){description,type},linkedAccommodations,linkedAddServices,linkedInfrastructures,images(count:100,sizes:[55,56,57]){id,name,copyright,author,license,urls,resolutionX,resolutionY,description},dynamicDescriptions(types:[]){type,name,description},links(types:[]){id,name,url,order,type},documents{id,name,order,url,nameWithExtension,extension},addresses(types:[32,33,34,31]){id,parentId,title,firstName,lastName,company,addressType,address1,address2,city,country,zipCode,email,fax,mobile,phone,url},criteria{groupId,groupName,items{id,name,value}},durationType,healthAndSecurityCriteria{groupId,groupName,image,items{id,name,value}},sustainabilityCriteria{groupId,groupName,image,items{id,name,value}},startTimeDurations{time,weekDays,duration},nextOccurrences(fromDate:"2026-5-17",count:12){items{date,dayOfWeek,startTime,duration},hasMoreItems},selectedEventDate:nextOccurrences(fromDate:"2026-5-17",count:1){items{date,dayOfWeek,startTime,duration},hasMoreItems}guestCards{id,name,type,hasIcon,iconUrl,webLink,description(fromDate:"2026-5-17")},handicapFacilities{groupId,groupName,items{id,name,value,comment,handicapGroupIds}},handicapClassifications{id,name,order,icon,image},classifications{id,name,order,url,icon,image}&limVISIBILITYLEVEL=5&limExAccShSPwoPr=false-->

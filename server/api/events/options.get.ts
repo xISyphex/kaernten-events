@@ -7,7 +7,7 @@ export default defineEventHandler(async () => {
 
   const base = 'https://webapi.deskline.net/kaerntenevents/de/events'
   const fields = 'location{place,town},criteria{groupName},holidayThemes{name}'
-  const pageSizes = [1000, 500, 200, 100]
+  const pageSizes = [3000]
   const towns = new Set<string>()
   const groups = new Set<string>()
   const themes = new Set<string>()

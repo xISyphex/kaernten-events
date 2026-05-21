@@ -1,4 +1,4 @@
-
+<!-- events/index.vue - Main event listing page with filters and pagination -->
 <script setup lang="ts">
 import { reactive, ref, computed, watch } from 'vue'
 import EventCard from '~/components/events/eventcard.vue'
@@ -30,7 +30,7 @@ const hasFilters = computed(
 const apiPageNo = computed(() => (page.value === 0 ? 0 : page.value + 1))
 const params = computed(() => ({
   pageNo: hasFilters.value ? nextApiPage.value : apiPageNo.value,
-  pageSize: hasFilters.value ? 500 : pageSize,
+  pageSize: hasFilters.value ? 3000 : pageSize,
 }))
 
 const { data, pending, error } = await useFetch<Record<string, any>>('/api/events', {
@@ -136,7 +136,7 @@ const displayedEvents = computed(() => {
 
 const resultCountText = computed(() => {
   const total = hasFilters.value ? allFilteredEvents.value.length : totalRecords.value
-  return `${displayedEvents.value.length} of ${total} items`
+  return `${displayedEvents.value.length} von ${total} Ergebnissen`
 })
 
 const townOptions = computed(() => filterOptions.value?.towns ?? [])
