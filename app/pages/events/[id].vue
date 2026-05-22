@@ -225,6 +225,14 @@ function prevPage() {
           <p>{{ event.location.place }}, {{ event.location.town }}</p>
           <p>{{ address.zipCode }} {{ address.city }}</p>
         </div>
+        <div v-if="event.location.latitude && event.location.longitude" class="mt-4">
+        <iframe
+  :src="`https://www.openstreetmap.org/export/embed.html?bbox=${event.location.longitude-0.01},${event.location.latitude-0.01},${event.location.longitude+0.01},${event.location.latitude+0.01}&layer=mapnik&marker=${event.location.latitude},${event.location.longitude}`"
+  class="w-full h-64 rounded-lg border-0"
+  allowfullscreen
+  loading="lazy"
+/>
+        </div>
       </div>
     
   </div>
