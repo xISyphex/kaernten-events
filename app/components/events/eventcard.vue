@@ -56,7 +56,7 @@ const timeText = computed(() => {
 
 <template>
 <NuxtLink :to="`/events/${event.id ?? event['@id']}`" target="_blank">
-  <article class="group h-full flex flex-col rounded-2xl bg-slate-50 border-2 border-gray-300 overflow-hidden shadow-sm hover:scale-[1.08] hover:shadow-lg hover:border-blue-500 hover:border-2 transition-transform">
+  <article class="group h-full flex flex-col rounded-2xl bg-slate-50 border-2 border-gray-400 overflow-hidden shadow-lg hover:scale-[1.08] hover:shadow-lg hover:border-blue-500 hover:border-3 transition-transform">
     <div v-if="eventImage" class="relative h-48 bg-slate-200">
       <!-- Event Image-->
       <img

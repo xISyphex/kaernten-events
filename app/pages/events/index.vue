@@ -184,7 +184,7 @@ const resultCountText = computed(() => {
     return `${initialData.value?.data?.length ?? 0} von ${totalRecords.value} Ergebnissen (lädt…)`
   }
   const total = hasFilters.value ? allFilteredEvents.value.length : allEvents.value.length
-  return `${displayedEvents.value.length} von ${total} Ergebnissen`
+  return `Ergebnisse ${Math.min(page.value * pageSize + 1, total)}-${Math.min(page.value * pageSize + pageSize, total)} von ${total}`
 })
 
 //visible page numbers for pagination control
@@ -220,6 +220,11 @@ const visiblePages = computed(() => {
   return pages
 })
 
+function goToPage(newPage: number) {
+  page.value = Math.max(0, Math.min(newPage, pageCount.value - 1))
+}
+
+
 function onFiltersUpdate(next: {
   search?: string
   towns?: string[]
@@ -240,30 +245,32 @@ function onFiltersUpdate(next: {
   }
 }
  
-function goToPage(newPage: number) {
-  page.value = Math.max(0, Math.min(newPage, pageCount.value - 1))
-}
+// current background based on time of the day (just for fun)
+const currentBackground = computed (() => {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return '/images/kärnten_morning_2.jpg'
+  if (hour >= 12 && hour < 17) return '/images/kärnten_day_2.jpg'
+  if (hour >= 17 && hour < 21) return '/images/kärnten_evening.jpg'
+  return '/images/kärnten_night.jpg'
+})
+
 
 </script>
 
 <template>
-  <div class="min-h-screen bg-cover bg-center bg-no-repeat p-8" style="background-image: url('/images/bg.jpg')">
+  <div
+  class="min-h-dvh bg-cover bg-center bg-no-repeat bg-fixed p-8 transition-all duration-700"
+  :style="{ backgroundImage: `url(${currentBackground})` }"
+>
     <div class="max-w-6xl mx-auto space-y-6">
-      <div class="rounded-2xl bg-white/60 p-6 shadow-sm border border-gray-200">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 class="text-xl text-black font-semibold">Aktuelle Veranstaltungen</h2>
-          </div>
-          <div class="text-sm text-gray-500">
-            <span v-if="initialPending">Loading events…</span>
-            <span v-else-if="error">Error loading data.</span>
-            <span v-else>
-              {{ resultCountText }}
-                <span v-if="!initialPending && cacheinitialPending" class="ml-2 text-xs text-indigo-400 animate-pulse">
-                  (Alle Events werden geladen…)
-                </span>
-            </span>
-          </div>
+      <div class="rounded-2xl bg-white/60 backdrop-blur p-6 shadow-sm border border-gray-200">
+        <div class="flex flex-col items-center">
+
+           <h2 class="text-5xl font-serif font-bold tracking-tight text-slate-900 mb-2">Events Kärnten</h2>
+            <p class="text-slate-700 text-lg font-medium font-mono">
+              Entdecke Veranstaltungen, Kultur und Erlebnisse in ganz Kärnten
+            </p>
+          
         </div>
 
         <div class="mt-4">
@@ -304,7 +311,6 @@ function goToPage(newPage: number) {
             <!-- Pagination controls -->
           <template v-if="!initialPending && !error && pageCount > 1">
             <div class="mt-4 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-4">
-            
               <!-- page buttons -->
               <div class="flex flex-wrap items-center justify-center gap-2">
                   <!-- little search-input (only numbers allowed) to select a page -->
@@ -354,6 +360,16 @@ function goToPage(newPage: number) {
                   </svg>           
                 </button>
               </div>
+                <div class="text-sm text-gray-900 font-medium">
+                  <span v-if="initialPending">Loading events…</span>
+                  <span v-else-if="error">Error loading data.</span>
+                  <span v-else>
+                    {{ resultCountText }}
+                  <span v-if="!initialPending && cacheinitialPending" class="ml-2 text-xs text-indigo-400 animate-pulse">
+                    (Alle Events werden geladen…)
+                  </span>
+                  </span>
+                </div>
               <!--<div class="text-sm text-slate-600">Seite {{ page + 1 }} von {{ pageCount }}</div>-->
             </div>
           </template>

@@ -4,7 +4,9 @@ const env = (globalThis as any).process?.env || {}
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss',
+    '@nuxt/fonts'
+  ],
 
   tailwindcss: {
     configPath: '~/tailwind.config.js',

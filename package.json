@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/fonts": "^0.14.0",
     "@vuepic/vue-datepicker": "^12.1.0",
     "flowbite": "^4.0.2",
     "nuxt": "^4.4.5",
