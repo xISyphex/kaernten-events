@@ -39,6 +39,13 @@ const imageCredits = computed(() => {
 const durationType = computed(() => event.value?.durationType ?? null)
 console.log('Duration Type:', durationType.value)
 
+const mapUrl = computed(() => {
+  const lat = event.value?.location.latitude
+  const lon = event.value?.location.longitude
+  const offset = 0.01
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${lon - offset},${lat - offset},${lon + offset},${lat + offset}&layer=mapnik&marker=${lat},${lon}`
+})
+
 function prevImage() {
   if (images.value.length === 0) return
   currentImageIndex.value = (currentImageIndex.value - 1 + images.value.length) % images.value.length 
@@ -59,6 +66,8 @@ function prevPage() {
     currentPage.value--
   }
 }
+
+
 
 </script>
 
@@ -154,7 +163,7 @@ function prevPage() {
       <!-- Next Dates -->
       <div v-if="nextDates.length" class="rounded-2xl bg-white shadow p-6">
         <h2 class="text-lg font-semibold text-slate-800 mb-3">Weitere Termine</h2>
-        <ul class="divide-y divide-gray-100 min-h-[445px]">
+        <ul class="divide-y divide-gray-100">
           <li v-for="(item, i) in paginatedDates" :key="i" class="py-2 flex justify-between text-sm text-slate-700">
             <span>{{ new Date(item.date).toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' }) }}</span>
             <span v-if="durationType == 2 && item.duration" class="text-slate-500">{{ item.startTime }} · {{ item.duration }} Std.</span>
@@ -225,14 +234,17 @@ function prevPage() {
           <p>{{ event.location.place }}, {{ event.location.town }}</p>
           <p>{{ address.zipCode }} {{ address.city }}</p>
         </div>
-        <div v-if="event.location.latitude && event.location.longitude" class="mt-4">
-        <iframe
-  :src="`https://www.openstreetmap.org/export/embed.html?bbox=${event.location.longitude-0.01},${event.location.latitude-0.01},${event.location.longitude+0.01},${event.location.latitude+0.01}&layer=mapnik&marker=${event.location.latitude},${event.location.longitude}`"
-  class="w-full h-64 rounded-lg border-0"
-  allowfullscreen
-  loading="lazy"
-/>
-        </div>
+      <div v-if="event.location.latitude && event.location.longitude" class="mt-4">
+  <ClientOnly>
+    <LocationMap
+      :latitude="event.location.latitude"
+      :longitude="event.location.longitude"
+    />
+    <template #fallback>
+      <div class="w-full h-64 rounded-lg bg-slate-100 animate-pulse" />
+    </template>
+  </ClientOnly>
+</div>
       </div>
     
   </div>

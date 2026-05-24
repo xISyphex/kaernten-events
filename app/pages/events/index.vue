@@ -311,20 +311,9 @@ const currentBackground = computed (() => {
             <!-- Pagination controls -->
           <template v-if="!initialPending && !error && pageCount > 1">
             <div class="mt-4 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-4">
+              <div class="relative flex w-full items-center justify-center">
               <!-- page buttons -->
               <div class="flex flex-wrap items-center justify-center gap-2">
-                  <!-- little search-input (only numbers allowed) to select a page -->
-               <input
-                type="text"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                min="1"
-                :max="pageCount"
-                v-model.number="pageInput"
-                @change="goToPage(pageInput - 1)"
-                class="w-10 h-8 rounded ring-gray-400 ring-2 bg-white text-center text-sm text-black focus:ring-2 focus:ring-indigo-500"
-                :disabled="initialPending || error"
-              />
                 <button
                   v-if="page > 0"
                   class="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-slate-50"
@@ -359,8 +348,29 @@ const currentBackground = computed (() => {
                     <path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd" />
                   </svg>           
                 </button>
+ <!-- little search-input (only numbers allowed) to select a page -->
+             
               </div>
-                <div class="text-sm text-gray-900 font-medium">
+                  <div class="absolute right-20 flex items-center gap-1 text-sm text-black">
+                  <span>Gehe zu Seite
+                  </span>
+                <input
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                min="1"
+                :max="pageCount"
+                v-model.number="pageInput"
+                @change="goToPage(pageInput - 1)"
+                class="w-8 h-8 rounded-2xl ring-gray-400 ring-2 bg-white text-center text-sm text-black focus:ring-2 focus:ring-indigo-500"
+                :disabled="initialPending || error"
+              />
+              <span>
+                  </span>
+                </div>
+            </div>
+            
+                <div class="text-sm text-gray-900 font-medium justify-end">
                   <span v-if="initialPending">Loading events…</span>
                   <span v-else-if="error">Error loading data.</span>
                   <span v-else>
