@@ -24,7 +24,7 @@
       </h1>
 
       <p class="text-slate-600 leading-relaxed mb-4">
-        Diese Website wurde als Teil einer Jobbewerbung erstellt. Ein kleines aber funktionales Demo, das meinen Ansatz bei der Frontend-Entwicklung, Datenpräsentation und Benutzererfahrung zeigt.
+        Diese Website wurde für die 'pixelpoint multimedia werbe GmbH' als Teil einer Jobbewerbung erstellt. Ein kleines aber funktionales Demo, das meinen Ansatz bei der Frontend-Entwicklung, Datenpräsentation und Benutzererfahrung zeigt.
       </p>
 
       <p class="text-slate-600 leading-relaxed mb-8">
