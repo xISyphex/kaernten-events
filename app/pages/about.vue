@@ -3,7 +3,7 @@
     class="min-h-dvh bg-cover bg-center bg-no-repeat bg-fixed p-8 transition-all duration-700"
     :style="{ backgroundImage: `url(/images/about.jpg)` }"
   >
-    <div class="max-w-4xl rounded mx-auto bg-blue-100 p-10 shadow-sm border border-gray-200">
+    <div class="max-w-4xl rounded mx-auto bg-white p-10 shadow-sm border border-gray-200">
       <!-- Pin needle -->
       <div class="absolute left-1/2 -translate-x-1/2 -top-2 z-10 flex flex-col items-center">
         <!-- Pin head -->
