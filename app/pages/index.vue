@@ -4,10 +4,10 @@
  // current background based on time of the day (just for fun)
 const currentBackground = computed (() => {
   const hour = new Date().getHours()
-  if (hour >= 5 && hour < 12) return '/images/kärnten_morning_2.jpg'
-  if (hour >= 12 && hour < 17) return '/images/kärnten_day_2.jpg'
-  if (hour >= 17 && hour < 21) return '/images/kärnten_evening.jpg'
-  return '/images/kärnten_night.jpg'
+  if (hour >= 5 && hour < 12) return '/images/placeholder.jpg'
+  if (hour >= 12 && hour < 17) return '/images/placeholder.jpg'
+  if (hour >= 17 && hour < 21) return '/images/placeholder.jpg'
+  return '/images/placeholder.jpg'
 })
 
 </script>
@@ -18,7 +18,7 @@ const currentBackground = computed (() => {
     :style="{ backgroundImage: `url(${currentBackground})` }"
   >
   <div class="max-w-3xl mx-auto mt-20 px-4 py-16 text-center bg-white/50 rounded-2xl shadow-sm backdrop-blur pt-12">
-    <h1 class="text-4xl font-bold text-slate-900 mb-6">Willkommen zu Events Kärnten!</h1>
+    <h1 class="text-4xl font-bold font-serif text-slate-900 mb-6">Willkommen zu Events Kärnten!</h1>
     <p class="text-lg text-slate-700 mb-8">Entdecken Sie die vielfältigen Veranstaltungen in Kärnten auf einen Blick. Von Konzerten über Festivals bis hin zu kulturellen Highlights – hier finden Sie alle Informationen, um Ihren nächsten Ausflug zu planen.</p>
     <NuxtLink
   to="/events"
